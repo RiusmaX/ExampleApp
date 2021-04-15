@@ -6,25 +6,29 @@
  * @flow strict-local
  */
 
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 import type {Node} from 'react'
 import {
   Alert,
   StatusBar,
   useColorScheme,
   View,
+  Button
 } from 'react-native'
 import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import {Colors} from 'react-native/Libraries/NewAppScreen'
 import OneSignal from 'react-native-onesignal'
+import AsyncStorage from '@react-native-async-storage/async-storage'
 
 import MapScreen from './Screens/MapScreen'
 import NotifScreen from './Screens/NotifScreen'
+import LoginScreen from './Screens/LoginScreen'
 
 const Tab = createBottomTabNavigator()
 
 const App: () => Node = () => {
+  const [isLoggedIn, setIsLoggedIn] = useState(false)
   const isDarkMode = useColorScheme() === 'dark'
 
   const backgroundStyle = {
@@ -70,15 +74,36 @@ const App: () => Node = () => {
     OneSignal.addPermissionObserver(event => {
         console.log("OneSignal: permission changed:", event);
     });
+
+    const checkToken = async () => {
+      const token = await AsyncStorage.getItem('token')
+      if (token) {
+        setIsLoggedIn(true)
+      } else {
+        setIsLoggedIn(false)
+      }
+    }
+
+    checkToken()
+
   }, [])
+
+  
 
   return (
     <NavigationContainer>
       <StatusBar barStyle={isDarkMode ? 'light-content' : 'dark-content'} />
-      <Tab.Navigator initialRouteName='Notifs' >
-        <Tab.Screen name='Map' component={MapScreen} />
-        <Tab.Screen name='Notifs' component={NotifScreen} />
-      </Tab.Navigator>
+      {
+        isLoggedIn
+        ? (
+        <Tab.Navigator initialRouteName='Notifs' >
+          <Tab.Screen name='Map' component={MapScreen} />
+          <Tab.Screen name='Notifs' component={NotifScreen} />
+        </Tab.Navigator>
+        ) : (
+          <LoginScreen />
+        )
+      }
     </NavigationContainer>
   )
 }
