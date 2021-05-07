@@ -18,6 +18,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage'
 import MapScreen from './Screens/MapScreen'
 import NotifScreen from './Screens/NotifScreen'
 import LoginScreen from './Screens/LoginScreen'
+import CameraScreeen from './Screens/CameraScreen'
 
 const Tab = createBottomTabNavigator()
 
@@ -48,6 +49,7 @@ const App: () => Node = () => {
 
       const button1 = {
         text: 'Cancel',
+
         onPress: () => {
           notifReceivedEvent.complete()
         },
@@ -100,6 +102,7 @@ const App: () => Node = () => {
         <Tab.Navigator initialRouteName='Notifs'>
           <Tab.Screen name='Map' component={MapScreen} />
           <Tab.Screen name='Notifs' component={NotifScreen} />
+          <Tab.Screen name='Camera' component={CameraScreeen} />
         </Tab.Navigator>
       ) : (
         <LoginScreen />
